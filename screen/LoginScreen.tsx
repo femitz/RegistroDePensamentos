@@ -18,7 +18,7 @@ const LoginScreen = () => {
   
 
   return (
-    <View style={styles.container} onPress={Keyboard.dismiss}>
+    <View style={styles.container}>
       <View style={styles.containerInputs}>
         <TextInput
           style={styles.input}
@@ -37,6 +37,7 @@ const LoginScreen = () => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
+          //@ts-ignore
           onPress={navigation.navigate("Home")}
           style={styles.buttons}
         >

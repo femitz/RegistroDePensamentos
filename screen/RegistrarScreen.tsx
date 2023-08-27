@@ -25,7 +25,6 @@ export interface Pensamentos {
   pensamentoAlternativo: string,
   avaliacaoPensamentoAlternativo: string,
   avaliacaoEstadoHumor: string,
-
 }
 
 export default function RegistrarScreen() {
@@ -253,8 +252,6 @@ const styles = StyleSheet.create({
     fontSize: 19,
   },
   buttonEnviar:{
-    // backgroundColor: "#fff",
-    // borderBlockColor: "#000",
     borderRadius: 30,
     width: "90%",
     height: 50,

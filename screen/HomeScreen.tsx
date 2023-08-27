@@ -7,12 +7,16 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button}
+      //@ts-ignore
+        onPress={() => navigation.navigate('PensamentosAnteriores')}
+      >
         <Text style={styles.buttonText}>Pensamentos anteriores</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
+        //@ts-ignore
         onPress={() => navigation.navigate("Registrar")}
       >
         <Text style={styles.buttonText}>Registrar pensamentos</Text>
@@ -20,8 +24,6 @@ const HomeScreen = () => {
 
       <TouchableOpacity
         style={styles.button}
-        // onPress={handleSignOut}
-        onPress={navigation.navigate("Login")}
       >
         <Text style={styles.buttonText}>Sair da conta</Text>
       </TouchableOpacity>
