@@ -13,6 +13,8 @@ import { FIRESTORE_DB } from "../firebase/Firebase";
 import { Pensamentos } from "./RegistrarScreen";
 import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { AntDesign } from "@expo/vector-icons";
+import { EvilIcons } from '@expo/vector-icons'; 
+
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const PensamentosAnterioresScreen = () => {
@@ -79,6 +81,11 @@ const PensamentosAnterioresScreen = () => {
 
         <Text style={styles.pensamentosTitle}>Avaliação estado de humor: </Text>
         <Text style={styles.pensamentosText}>{item.avaliacaoEstadoHumor}</Text>
+
+        <TouchableOpacity style={{width: '100%', flexDirection:'row', justifyContent:'flex-end'}}
+        onPress={() => deleteItem()}>
+          <EvilIcons name="trash" size={36} color="red" />
+        </TouchableOpacity>
       </View>
     );
   };
@@ -102,7 +109,6 @@ const PensamentosAnterioresScreen = () => {
         />
       </TouchableOpacity>
 
-      {/* <ScrollView showsVerticalScrollIndicator={false}> */}
         {pensamentos.length > 0 && (
           <View>
             <FlatList
@@ -114,7 +120,6 @@ const PensamentosAnterioresScreen = () => {
             />
           </View>
         )}
-      {/* </ScrollView> */}
     </SafeAreaView>
   );
 };
@@ -139,12 +144,13 @@ const styles = StyleSheet.create({
   pensamentosTitle: {
     color: "#B859C0",
     fontWeight: "bold",
-    fontSize: 19,
-    marginVertical: 8,
+    fontSize: 17,
+    marginVertical: 5,
   },
   pensamentosText: {
     flex: 1,
     paddingHorizontal: 4,
     fontSize: 16,
+    fontStyle: 'italic',
   },
 });

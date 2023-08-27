@@ -7,12 +7,14 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Keyboard,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { addDoc, collection, onSnapshot } from "firebase/firestore";
 import { FIRESTORE_DB } from "../firebase/Firebase"
+import Checkbox from "expo-checkbox";
 
 export interface Pensamentos {
   id: string,
@@ -28,19 +30,18 @@ export interface Pensamentos {
 }
 
 export default function RegistrarScreen() {
-  const [situacaoHumor, setSituacaoHumor] = useState("");
-  const [estadoHumor, setEstadoHumor] = useState("");
-  const [pensamentoAutomatico, setPensamentoAutomatico] = useState("");
-  const [evidenciasApoiam, setEvidenciasApoiam] = useState("");
-  const [evidenciasNaoApoiam, setEvidenciasNaoApoiam] = useState("");
-  const [pensamentoAlternativo, setPensamentoAlternativo] = useState("");
-  const [avaliacaoPensamentoAlternativo, setAvaliacaoPensamentoAlternativo] = useState("");
-  const [avaliacaoEstadoHumor, setAvaliacaoEstadoHumor] = useState("");
-  const date = new Date().toLocaleDateString("pt-BR", { timeZone: "UTC" });
+  const [situacaoHumor, setSituacaoHumor] = useState("")
+  const [estadoHumor, setEstadoHumor] = useState("")
+  const [pensamentoAutomatico, setPensamentoAutomatico] = useState("")
+  const [evidenciasApoiam, setEvidenciasApoiam] = useState("")
+  const [evidenciasNaoApoiam, setEvidenciasNaoApoiam] = useState("")
+  const [pensamentoAlternativo, setPensamentoAlternativo] = useState("")
+  const [avaliacaoPensamentoAlternativo, setAvaliacaoPensamentoAlternativo] = useState("")
+  const [avaliacaoEstadoHumor, setAvaliacaoEstadoHumor] = useState("")
+  const date = new Date().toLocaleDateString("pt-BR")
   const [pensamentos, setPensamentos] = useState<Pensamentos[]>([])
-
-
-  const navigation = useNavigation();
+  const navigation = useNavigation()
+  const [isChecked, setChecked] = useState(false);
 
   useEffect(() =>{
     const pensamentosRef = collection(FIRESTORE_DB, 'pensamentos')
@@ -63,26 +64,31 @@ export default function RegistrarScreen() {
   },[])
 
   const addNewPensamento = async () => {
-    const doc = await addDoc(collection(FIRESTORE_DB, 'pensamentos',), { 
-      date: date, 
-      situacaoHumor: situacaoHumor,
-      estadoHumor: estadoHumor,
-      pensamentoAutomatico: pensamentoAutomatico,
-      evidenciasApoiam: evidenciasApoiam,
-      evidenciasNaoApoiam: evidenciasNaoApoiam,
-      pensamentoAlternativo: pensamentoAlternativo,
-      avaliacaoPensamentoAlternativo: avaliacaoPensamentoAlternativo,
-      avaliacaoEstadoHumor: avaliacaoEstadoHumor,
-    })
-    setSituacaoHumor('')
-    setEstadoHumor('')
-    setPensamentoAutomatico('')
-    setEvidenciasApoiam('')
-    setEvidenciasNaoApoiam('')
-    setPensamentoAlternativo('')
-    setAvaliacaoPensamentoAlternativo('')
-    setAvaliacaoEstadoHumor('')
-    Keyboard.dismiss()
+    if(isChecked){
+      const doc = await addDoc(collection(FIRESTORE_DB, 'pensamentos',), { 
+        date: date, 
+        situacaoHumor: situacaoHumor,
+        estadoHumor: estadoHumor,
+        pensamentoAutomatico: pensamentoAutomatico,
+        evidenciasApoiam: evidenciasApoiam,
+        evidenciasNaoApoiam: evidenciasNaoApoiam,
+        pensamentoAlternativo: pensamentoAlternativo,
+        avaliacaoPensamentoAlternativo: avaliacaoPensamentoAlternativo,
+        avaliacaoEstadoHumor: avaliacaoEstadoHumor,
+      })
+      setSituacaoHumor('')
+      setEstadoHumor('')
+      setPensamentoAutomatico('')
+      setEvidenciasApoiam('')
+      setEvidenciasNaoApoiam('')
+      setPensamentoAlternativo('')
+      setAvaliacaoPensamentoAlternativo('')
+      setAvaliacaoEstadoHumor('')
+      Alert.alert('Pensamentos foram salvos com sucesso')
+      setChecked(false)
+      Keyboard.dismiss()
+      navigation.goBack()
+    }
   }
 
   return (
@@ -203,7 +209,19 @@ export default function RegistrarScreen() {
               onChangeText={(text) => setAvaliacaoEstadoHumor(text)}
               value={avaliacaoEstadoHumor}
             />
+
           </View>
+
+          <TouchableOpacity style={{flexDirection: 'row', marginTop: 15}}
+          onPress={() => setChecked(true)}>
+            <Checkbox
+            style={{marginRight: 5}}
+            value={isChecked}
+            onValueChange={setChecked}
+            color={isChecked ? '#4630EB' : undefined}
+            />
+            <Text>Você deseja realmente salvar?</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity
             onPress={addNewPensamento}
