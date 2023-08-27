@@ -10,11 +10,9 @@ import { useNavigation } from "@react-navigation/native";
 import { FIRESTORE_DB } from "../firebase/Firebase";
 import { Pensamentos } from "./RegistrarScreen";
 import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
-import { AntDesign } from "@expo/vector-icons";
-import { EvilIcons } from '@expo/vector-icons'; 
+import { EvilIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StatusBar } from 'expo-status-bar';
-
+import { StatusBar } from "expo-status-bar";
 
 const PensamentosAnterioresScreen = () => {
   const navigation = useNavigation();
@@ -81,8 +79,14 @@ const PensamentosAnterioresScreen = () => {
         <Text style={styles.pensamentosTitle}>Avaliação estado de humor: </Text>
         <Text style={styles.pensamentosText}>{item.avaliacaoEstadoHumor}</Text>
 
-        <TouchableOpacity style={{width: '100%', flexDirection:'row', justifyContent:'flex-end'}}
-        onPress={() => deleteItem()}>
+        <TouchableOpacity
+          style={{
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "flex-end",
+          }}
+          onPress={() => deleteItem()}
+        >
           <EvilIcons name="trash" size={36} color="red" />
         </TouchableOpacity>
       </View>
@@ -93,33 +97,36 @@ const PensamentosAnterioresScreen = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
       <TouchableOpacity
-        onPress={() => navigation.goBack()}
         style={{
-          width: 24,
-          height: 24,
-          marginTop: 30,
+          width: "100%",
           borderRadius: 30,
+          backgroundColor: "#B859C0",
+          justifyContent: "center",
+          alignItems: "center",
+          height: 50,
+          marginTop: 30,
           marginBottom: 10,
+          elevation: 1
         }}
+        //@ts-ignore
+        onPress={() => navigation.navigate("Registrar")}
       >
-        <AntDesign
-          name="left"
-          size={24}
-          color={"black"}
-        />
+        <Text style={{ color: "white", fontWeight: "bold" }}>
+          Adicionar novos pensamentos
+        </Text>
       </TouchableOpacity>
 
-        {pensamentos.length > 0 && (
-          <View>
-            <FlatList
-              data={pensamentos}
-              renderItem={renderPensamentos}
-              keyExtractor={(pensamentos: Pensamentos) => pensamentos.id}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 60}}
-            />
-          </View>
-        )}
+      {pensamentos.length > 0 && (
+        <View>
+          <FlatList
+            data={pensamentos}
+            renderItem={renderPensamentos}
+            keyExtractor={(pensamentos: Pensamentos) => pensamentos.id}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 90 }}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -133,12 +140,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   pensamentosContainer: {
-    marginTop: 10,
     alignItems: "flex-start",
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 10,
-    marginVertical: 20,
+    marginVertical: 10,
     elevation: 2,
   },
   pensamentosTitle: {
@@ -151,6 +157,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 4,
     fontSize: 16,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
 });

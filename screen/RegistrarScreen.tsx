@@ -17,7 +17,6 @@ import { FIRESTORE_DB } from "../firebase/Firebase"
 import Checkbox from "expo-checkbox";
 import { StatusBar } from 'expo-status-bar';
 
-
 export interface Pensamentos {
   id: string,
   date: string,
