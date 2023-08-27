@@ -15,6 +15,8 @@ import { useNavigation } from "@react-navigation/native";
 import { addDoc, collection, onSnapshot } from "firebase/firestore";
 import { FIRESTORE_DB } from "../firebase/Firebase"
 import Checkbox from "expo-checkbox";
+import { StatusBar } from 'expo-status-bar';
+
 
 export interface Pensamentos {
   id: string,
@@ -93,8 +95,9 @@ export default function RegistrarScreen() {
 
   return (
     <SafeAreaView
-      style={{ backgroundColor: "#C197D4", flex: 1, paddingHorizontal: 12 }}
+    style={{ backgroundColor: "#C197D4", flex: 1, paddingHorizontal: 12 }}
     >
+      <StatusBar style="dark" />
       <TouchableOpacity
         //botão de voltar...
         onPress={() => navigation.goBack()}

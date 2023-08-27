@@ -4,7 +4,6 @@ import {
   TextInput,
   View,
   TouchableOpacity,
-  Keyboard,
 } from "react-native";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -14,8 +13,6 @@ const LoginScreen = () => {
   const [nome, setNome] = useState("");
   const [senha, setSenha] = useState("");
   const navigation = useNavigation();
-
-  
 
   return (
     <View style={styles.container}>

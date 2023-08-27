@@ -5,8 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  TouchableHighlight,
-  ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { FIRESTORE_DB } from "../firebase/Firebase";
@@ -14,8 +12,9 @@ import { Pensamentos } from "./RegistrarScreen";
 import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { AntDesign } from "@expo/vector-icons";
 import { EvilIcons } from '@expo/vector-icons'; 
-
 import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from 'expo-status-bar';
+
 
 const PensamentosAnterioresScreen = () => {
   const navigation = useNavigation();
@@ -92,6 +91,7 @@ const PensamentosAnterioresScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" />
       <TouchableOpacity
         onPress={() => navigation.goBack()}
         style={{

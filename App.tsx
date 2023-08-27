@@ -2,6 +2,7 @@ import React from "react"
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+// Telas
 import LoginScreen from "./screen/LoginScreen"
 import HomeScreen from "./screen/HomeScreen"
 import RegistrarScreen from "./screen/RegistrarScreen";
