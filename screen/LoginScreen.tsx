@@ -5,20 +5,64 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { handleLogin, handleReg } from "../firebase/User";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { getDoc, doc, collection, setDoc } from "firebase/firestore";
+import { FIRESTORE_DB } from "../firebase/Firebase";
+
+const auth = getAuth();
+
+function handleLogin(email: string, senha: string) {
+  signInWithEmailAndPassword(auth, email, senha)
+    .then(async (user) => {
+      const data = user.user;
+      try {
+        const userDoc = await getDoc(doc(FIRESTORE_DB, "users", data.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          await AsyncStorage.setItem("dataUser", JSON.stringify(userData));
+        } else {
+          console.log("Usuario não encontrado no banco de dados");
+        }
+      } catch (e) {
+        console.log("Error handleLogin:", e);
+      }
+    })
+    .catch((err) => {
+      console.log(err.code);
+      console.log(err.message);
+      return;
+    });
+}
+
+function handleReg(email: string, senha: string) {
+  createUserWithEmailAndPassword(auth, email, senha)
+    .then(async (user) => {
+      const data = user.user;
+      console.log("Usuario logado: ", data);
+      console.log(data.uid);
+      try {
+        const userRef = doc(collection(FIRESTORE_DB, "users"), data.uid);
+        await setDoc(userRef, {
+          id: data.uid,
+          email: email,
+        }).then(() => handleLogin(email, senha));
+      } catch (e) {
+        console.log("Error handleReg 1:", e);
+      }
+    })
+    .catch((e) => {
+      console.log("Error handleReg 2:", e);
+    });
+}
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const navigation = useNavigation();
   
-  useEffect(() => {
-    
-  },[])
-
-
   return (
     <View style={styles.container}>
       <View style={styles.containerInputs}>
