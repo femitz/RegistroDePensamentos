@@ -116,7 +116,7 @@ const PensamentosAnterioresScreen = () => {
         </Text>
       </TouchableOpacity>
 
-      {pensamentos.length > 0 && (
+      {pensamentos.length > 0 ? (
         <View>
           <FlatList
             data={pensamentos}
@@ -126,7 +126,8 @@ const PensamentosAnterioresScreen = () => {
             contentContainerStyle={{ paddingBottom: 90 }}
           />
         </View>
-      )}
+      ) : 
+        <Text>Adicione novos pensamentos para aparecer por aqui...</Text>}
     </SafeAreaView>
   );
 };

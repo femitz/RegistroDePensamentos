@@ -5,14 +5,19 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { handleLogin, handleReg } from "../firebase/User";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
-  const [nome, setNome] = useState("");
   const [senha, setSenha] = useState("");
   const navigation = useNavigation();
+  
+  useEffect(() => {
+    
+  },[])
+
 
   return (
     <View style={styles.container}>
@@ -34,14 +39,14 @@ const LoginScreen = () => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          //@ts-ignore
-          onPress={navigation.navigate("Home")}
+          onPress={() => handleLogin(email, senha)}
           style={styles.buttons}
         >
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.buttons, styles.buttonOutline]}
+          onPress={() => handleReg(email, senha) }
         >
           <Text style={[styles.buttonText, styles.buttonOutlineText]}>
             Registrar-se

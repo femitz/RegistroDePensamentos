@@ -16,6 +16,7 @@ import { addDoc, collection, onSnapshot } from "firebase/firestore";
 import { FIRESTORE_DB } from "../firebase/Firebase"
 import Checkbox from "expo-checkbox";
 import { StatusBar } from 'expo-status-bar';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface Pensamentos {
   id: string,
@@ -43,10 +44,17 @@ export default function RegistrarScreen() {
   const [pensamentos, setPensamentos] = useState<Pensamentos[]>([])
   const navigation = useNavigation()
   const [isChecked, setChecked] = useState(false);
+  const [user,setUser]=useState<any>()
 
   useEffect(() =>{
-    const pensamentosRef = collection(FIRESTORE_DB, 'pensamentos')
 
+    async function StorageUser() {
+      const storageUser = await AsyncStorage.getItem("dataUser")
+      storageUser ? setUser(JSON.parse(storageUser)) : null
+    }
+    StorageUser()
+
+    const pensamentosRef = collection(FIRESTORE_DB, `pensamentos`)
     const subscriber = onSnapshot(pensamentosRef, {
       next: (snapshot) => {
         console.log('Updated')
@@ -66,7 +74,7 @@ export default function RegistrarScreen() {
 
   const addNewPensamento = async () => {
     if(isChecked){
-      const doc = await addDoc(collection(FIRESTORE_DB, 'pensamentos',), { 
+      const doc = await addDoc(collection(FIRESTORE_DB,  `pensamentos`), { 
         date: date, 
         situacaoHumor: situacaoHumor,
         estadoHumor: estadoHumor,
