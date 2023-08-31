@@ -1,8 +1,6 @@
-# MitzHealth
+# Registro de pensamentos
 
-MitzHealth é um projeto feito em ReactNative feito para calcular seu IMC.
-
-Projeto baseado no curso de ReactNative do youtube.com/@onebitcode
+Registro de pensamentos é um projeto feito em ReactNative feito para salvar seus pensamentos em momentos de crise de ansiedade 
 
 ## Começando
 
@@ -15,8 +13,8 @@ Em breve disponivel na AppleStore
 ## Baixando via GitHub
 Abra o terminal cole os seguintes comandos:
 ````
-git clone https://www.github.com/devmitz/mitzhealth
-cd mitzhealth
+git clone https://www.github.com/devmitz/RegistrodePensamentos
+cd Registro de pensamentos
 ````
 
 ### Pré-requisitos
