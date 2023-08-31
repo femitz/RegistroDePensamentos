@@ -16,7 +16,6 @@ import { addDoc, collection, onSnapshot } from "firebase/firestore";
 import { FIRESTORE_DB } from "../firebase/Firebase"
 import Checkbox from "expo-checkbox";
 import { StatusBar } from 'expo-status-bar';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface Pensamentos {
   id: string,
@@ -45,7 +44,6 @@ export default function RegistrarScreen() {
   const navigation = useNavigation()
   const [isChecked, setChecked] = useState(false);
   const route = useRoute();
-
   //@ts-ignore
   const { userId } = route.params;
 

@@ -13,7 +13,6 @@ import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { EvilIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const PensamentosAnterioresScreen = () => {
   const navigation = useNavigation();
@@ -21,11 +20,8 @@ const PensamentosAnterioresScreen = () => {
 
   //@ts-ignore
   const { userId } = route.params;
-  
+
   useEffect(() => {
-
-    console.log(`/users/${userId}/pensamentos`)
-
     const pensamentosRef = collection(
       FIRESTORE_DB,
       `/users/${userId}/pensamentos`
