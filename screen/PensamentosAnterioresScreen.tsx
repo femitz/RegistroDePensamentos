@@ -13,13 +13,27 @@ import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { EvilIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { Ionicons } from '@expo/vector-icons'; 
+import { getAuth, signOut } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const PensamentosAnterioresScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const auth = getAuth();
 
   //@ts-ignore
   const { userId } = route.params;
+
+  function loggout(){
+    signOut(auth).then(() => {
+      AsyncStorage.clear()
+      //@ts-ignore
+      navigation.navigate('Login')
+    }).catch((error) => {
+      console.log('Erro ao deslogar: ', error)
+    });
+  }
 
   useEffect(() => {
     const pensamentosRef = collection(
@@ -103,6 +117,16 @@ const PensamentosAnterioresScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
+
+      {/* Botão sair. */}
+      <TouchableOpacity
+      style={{
+        marginTop:20,
+      }}
+      onPress={() => loggout()}>
+        <Ionicons name="exit-outline" size={24} color="red" />
+      </TouchableOpacity>
+       {/*Botão Adicionar novos pensamentos  */}
       <TouchableOpacity
         style={{
           width: "100%",
@@ -111,7 +135,7 @@ const PensamentosAnterioresScreen = () => {
           justifyContent: "center",
           alignItems: "center",
           height: 50,
-          marginTop: 30,
+          marginTop: 10,
           marginBottom: 10,
           elevation: 1,
         }}
@@ -130,7 +154,7 @@ const PensamentosAnterioresScreen = () => {
             renderItem={renderPensamentos}
             keyExtractor={(pensamentos: Pensamentos) => pensamentos.id}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 90 }}
+            contentContainerStyle={{ paddingBottom: 120 }}
           />
         </View>
       ) : (

@@ -50,9 +50,7 @@ const LoginScreen = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
       const user = userCredential.user;
       
-      console.log("Usuário logado: ", user);
-      console.log("ID User: ", user.uid);
-      
+      console.log("Usuário logado");
       const userRef = doc(collection(FIRESTORE_DB, "users"), user.uid);
       await setDoc(userRef, {
         id: user.uid,
