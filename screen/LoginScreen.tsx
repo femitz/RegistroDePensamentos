@@ -5,14 +5,82 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { getDoc, doc, collection, setDoc } from "firebase/firestore";
+import { FIRESTORE_DB } from "../firebase/Firebase";
+
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState("");
-  const [nome, setNome] = useState("");
-  const [senha, setSenha] = useState("");
+  const [email, setEmail] = useState("")
+  const [senha, setSenha] = useState("")
   const navigation = useNavigation();
+  const auth = getAuth();
+
+  useEffect(() => {
+    checkPreviousLogin();
+  }, []);
+
+  async function handleLogin(email: string, senha: string) {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+      const user = userCredential.user;
+
+      const userDoc = await getDoc(doc(FIRESTORE_DB, "users", user.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        await AsyncStorage.setItem("dataUser", JSON.stringify(userData));
+        await AsyncStorage.setItem("userLoggedIn", "true"); // Armazenar status de login 
+        await AsyncStorage.setItem("userUID", user.uid); // Armazenar o user UID
+        
+        //@ts-ignore
+        navigation.navigate('PensamentosAnteriores', { userId: user.uid });
+      } else {
+        console.log("Usuário não encontrado no banco de dados");
+      }
+    } catch (e) {
+      console.log("Erro handleLogin:", e);
+    }
+  }
+
+  async function handleReg(email: string, senha: string) {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+      const user = userCredential.user;
+      
+      console.log("Usuário logado");
+      const userRef = doc(collection(FIRESTORE_DB, "users"), user.uid);
+      await setDoc(userRef, {
+        id: user.uid,
+        email: email,
+      });
+      
+      await handleLogin(email, senha);
+    } catch (e) {
+      console.log("Erro handleReg:", e);
+    }
+  }
+  
+  async function checkPreviousLogin() {
+    try {
+      const userLoggedIn = await AsyncStorage.getItem("userLoggedIn");
+      if (userLoggedIn === "true") {
+        const dataUser = await AsyncStorage.getItem("dataUser");
+        if (dataUser) {
+          const userData = JSON.parse(dataUser);
+          console.log("Usuário já logado:", userData);
+          //@ts-ignore
+          navigation.navigate("PensamentosAnteriores", { userId: userData.id });
+        }
+      } else {
+        console.log("Nenhum usuário logado anteriormente.");
+      }
+    } catch (e) {
+      console.log("Erro ao verificar login anterior:", e);
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -20,6 +88,7 @@ const LoginScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="JoseSilva@gmail.com"
+          inputMode="email"
           value={email}
           onChangeText={(text) => setEmail(text)}
         />
@@ -34,14 +103,14 @@ const LoginScreen = () => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          //@ts-ignore
-          onPress={navigation.navigate("Home")}
+          onPress={() => handleLogin(email, senha)}
           style={styles.buttons}
         >
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.buttons, styles.buttonOutline]}
+          onPress={() => handleReg(email, senha) }
         >
           <Text style={[styles.buttonText, styles.buttonOutlineText]}>
             Registrar-se

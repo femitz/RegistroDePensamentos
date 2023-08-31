@@ -6,19 +6,40 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { FIRESTORE_DB } from "../firebase/Firebase";
 import { Pensamentos } from "./RegistrarScreen";
 import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { EvilIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { Ionicons } from '@expo/vector-icons'; 
+import { getAuth, signOut } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const PensamentosAnterioresScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const auth = getAuth();
+
+  //@ts-ignore
+  const { userId } = route.params;
+
+  function loggout(){
+    signOut(auth).then(() => {
+      AsyncStorage.clear()
+      //@ts-ignore
+      navigation.navigate('Login')
+    }).catch((error) => {
+      console.log('Erro ao deslogar: ', error)
+    });
+  }
 
   useEffect(() => {
-    const pensamentosRef = collection(FIRESTORE_DB, "pensamentos");
+    const pensamentosRef = collection(
+      FIRESTORE_DB,
+      `/users/${userId}/pensamentos`
+    );
 
     const subscriber = onSnapshot(pensamentosRef, {
       next: (snapshot) => {
@@ -35,12 +56,12 @@ const PensamentosAnterioresScreen = () => {
       },
     });
     return () => subscriber();
-  }, []);
+  },[]);
 
   const [pensamentos, setPensamentos] = useState<Pensamentos[]>([]);
 
   const renderPensamentos = ({ item }: any) => {
-    const ref = doc(FIRESTORE_DB, `pensamentos/${item.id}`);
+    const ref = doc(FIRESTORE_DB, `/users/${userId}/pensamentos/${item.id}`);
 
     const deleteItem = async () => {
       deleteDoc(ref);
@@ -96,6 +117,16 @@ const PensamentosAnterioresScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
+
+      {/* Botão sair. */}
+      <TouchableOpacity
+      style={{
+        marginTop:20,
+      }}
+      onPress={() => loggout()}>
+        <Ionicons name="exit-outline" size={24} color="red" />
+      </TouchableOpacity>
+       {/*Botão Adicionar novos pensamentos  */}
       <TouchableOpacity
         style={{
           width: "100%",
@@ -104,28 +135,30 @@ const PensamentosAnterioresScreen = () => {
           justifyContent: "center",
           alignItems: "center",
           height: 50,
-          marginTop: 30,
+          marginTop: 10,
           marginBottom: 10,
-          elevation: 1
+          elevation: 1,
         }}
         //@ts-ignore
-        onPress={() => navigation.navigate("Registrar")}
+        onPress={() => navigation.navigate("Registrar", {userId})}
       >
         <Text style={{ color: "white", fontWeight: "bold" }}>
           Adicionar novos pensamentos
         </Text>
       </TouchableOpacity>
 
-      {pensamentos.length > 0 && (
+      {pensamentos.length > 0 ? (
         <View>
           <FlatList
             data={pensamentos}
             renderItem={renderPensamentos}
             keyExtractor={(pensamentos: Pensamentos) => pensamentos.id}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 90 }}
+            contentContainerStyle={{ paddingBottom: 120 }}
           />
         </View>
+      ) : (
+        <Text>Adicione novos pensamentos para aparecer por aqui...</Text>
       )}
     </SafeAreaView>
   );
