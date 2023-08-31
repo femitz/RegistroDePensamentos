@@ -6,19 +6,30 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { FIRESTORE_DB } from "../firebase/Firebase";
 import { Pensamentos } from "./RegistrarScreen";
 import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { EvilIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const PensamentosAnterioresScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
 
+  //@ts-ignore
+  const { userId } = route.params;
+  
   useEffect(() => {
-    const pensamentosRef = collection(FIRESTORE_DB, "pensamentos");
+
+    console.log(`/users/${userId}/pensamentos`)
+
+    const pensamentosRef = collection(
+      FIRESTORE_DB,
+      `/users/${userId}/pensamentos`
+    );
 
     const subscriber = onSnapshot(pensamentosRef, {
       next: (snapshot) => {
@@ -35,12 +46,12 @@ const PensamentosAnterioresScreen = () => {
       },
     });
     return () => subscriber();
-  }, []);
+  },[]);
 
   const [pensamentos, setPensamentos] = useState<Pensamentos[]>([]);
 
   const renderPensamentos = ({ item }: any) => {
-    const ref = doc(FIRESTORE_DB, `pensamentos/${item.id}`);
+    const ref = doc(FIRESTORE_DB, `/users/${userId}/pensamentos/${item.id}`);
 
     const deleteItem = async () => {
       deleteDoc(ref);
@@ -106,10 +117,10 @@ const PensamentosAnterioresScreen = () => {
           height: 50,
           marginTop: 30,
           marginBottom: 10,
-          elevation: 1
+          elevation: 1,
         }}
         //@ts-ignore
-        onPress={() => navigation.navigate("Registrar")}
+        onPress={() => navigation.navigate("Registrar", {userId})}
       >
         <Text style={{ color: "white", fontWeight: "bold" }}>
           Adicionar novos pensamentos
@@ -126,8 +137,9 @@ const PensamentosAnterioresScreen = () => {
             contentContainerStyle={{ paddingBottom: 90 }}
           />
         </View>
-      ) : 
-        <Text>Adicione novos pensamentos para aparecer por aqui...</Text>}
+      ) : (
+        <Text>Adicione novos pensamentos para aparecer por aqui...</Text>
+      )}
     </SafeAreaView>
   );
 };

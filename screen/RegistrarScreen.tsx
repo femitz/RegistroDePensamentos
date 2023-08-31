@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { addDoc, collection, onSnapshot } from "firebase/firestore";
 import { FIRESTORE_DB } from "../firebase/Firebase"
 import Checkbox from "expo-checkbox";
@@ -44,17 +44,13 @@ export default function RegistrarScreen() {
   const [pensamentos, setPensamentos] = useState<Pensamentos[]>([])
   const navigation = useNavigation()
   const [isChecked, setChecked] = useState(false);
-  const [user,setUser]=useState<any>()
+  const route = useRoute();
+
+  //@ts-ignore
+  const { userId } = route.params;
 
   useEffect(() =>{
-
-    async function StorageUser() {
-      const storageUser = await AsyncStorage.getItem("dataUser")
-      storageUser ? setUser(JSON.parse(storageUser)) : null
-    }
-    StorageUser()
-
-    const pensamentosRef = collection(FIRESTORE_DB, `pensamentos`)
+    const pensamentosRef = collection(FIRESTORE_DB, `/users/${userId}/pensamentos/`)
     const subscriber = onSnapshot(pensamentosRef, {
       next: (snapshot) => {
         console.log('Updated')
@@ -74,7 +70,7 @@ export default function RegistrarScreen() {
 
   const addNewPensamento = async () => {
     if(isChecked){
-      const doc = await addDoc(collection(FIRESTORE_DB,  `pensamentos`), { 
+      const doc = await addDoc(collection(FIRESTORE_DB,  `/users/${userId}/pensamentos/`), { 
         date: date, 
         situacaoHumor: situacaoHumor,
         estadoHumor: estadoHumor,
