@@ -4,6 +4,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -11,6 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { getDoc, doc, collection, setDoc } from "firebase/firestore";
 import { FIRESTORE_DB } from "../firebase/Firebase";
+import { StatusBar } from "expo-status-bar";
 
 
 const LoginScreen = () => {
@@ -41,6 +43,18 @@ const LoginScreen = () => {
         console.log("Usuário não encontrado no banco de dados");
       }
     } catch (e) {
+        if(e.code){
+          switch(e.code){
+            case 'auth/weak-password':
+              Alert.alert("Senha muito fraca")
+            case 'auth/email-already-in-use':
+              Alert.alert("O email já está em uso.")
+            case 'auth/wrong-password':
+              Alert.alert("Senha incorreta.")
+            default:
+              console.log(e)
+          }
+        }
       console.log("Erro handleLogin:", e);
     }
   }
@@ -84,6 +98,7 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="dark"/>
       <View style={styles.containerInputs}>
         <TextInput
           style={styles.input}
@@ -141,6 +156,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
+    height: 50,
   },
 
   buttons: {
@@ -169,12 +185,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontWeight: "700",
-    fontSize: 16,
+    fontSize: 19,
   },
 
   buttonOutlineText: {
     color: "#B859C0",
     fontWeight: "700",
-    fontSize: 16,
+    fontSize: 19,
   },
 });
