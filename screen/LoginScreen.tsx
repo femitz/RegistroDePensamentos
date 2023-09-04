@@ -8,14 +8,17 @@ import {
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { getDoc, doc, collection, setDoc } from "firebase/firestore";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { getDoc, doc } from "firebase/firestore";
 import { FIRESTORE_DB } from "../firebase/Firebase";
-
+import { StatusBar } from "expo-status-bar";
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState("")
-  const [senha, setSenha] = useState("")
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
   const navigation = useNavigation();
   const auth = getAuth();
 
@@ -25,18 +28,22 @@ const LoginScreen = () => {
 
   async function handleLogin(email: string, senha: string) {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        senha
+      );
       const user = userCredential.user;
 
       const userDoc = await getDoc(doc(FIRESTORE_DB, "users", user.uid));
       if (userDoc.exists()) {
         const userData = userDoc.data();
         await AsyncStorage.setItem("dataUser", JSON.stringify(userData));
-        await AsyncStorage.setItem("userLoggedIn", "true"); // Armazenar status de login 
+        await AsyncStorage.setItem("userLoggedIn", "true"); // Armazenar status de login
         await AsyncStorage.setItem("userUID", user.uid); // Armazenar o user UID
-        
+
         //@ts-ignore
-        navigation.navigate('PensamentosAnteriores', { userId: user.uid });
+        navigation.navigate("PensamentosAnteriores", { userId: user.uid });
       } else {
         console.log("Usuário não encontrado no banco de dados");
       }
@@ -45,24 +52,6 @@ const LoginScreen = () => {
     }
   }
 
-  async function handleReg(email: string, senha: string) {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-      const user = userCredential.user;
-      
-      console.log("Usuário logado");
-      const userRef = doc(collection(FIRESTORE_DB, "users"), user.uid);
-      await setDoc(userRef, {
-        id: user.uid,
-        email: email,
-      });
-      
-      await handleLogin(email, senha);
-    } catch (e) {
-      console.log("Erro handleReg:", e);
-    }
-  }
-  
   async function checkPreviousLogin() {
     try {
       const userLoggedIn = await AsyncStorage.getItem("userLoggedIn");
@@ -84,7 +73,10 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="dark" />
+      <Text style={{ color: "#fff", fontSize: 26 }}>Bem-vindo!</Text>
       <View style={styles.containerInputs}>
+        <Text style={{ color: "#fff" }}>Email:</Text>
         <TextInput
           style={styles.input}
           placeholder="JoseSilva@gmail.com"
@@ -92,6 +84,7 @@ const LoginScreen = () => {
           value={email}
           onChangeText={(text) => setEmail(text)}
         />
+        <Text style={{ color: "#fff", marginTop: 5 }}>Senha</Text>
         <TextInput
           style={styles.input}
           placeholder="Senha"
@@ -108,11 +101,21 @@ const LoginScreen = () => {
         >
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
+
+        <Text style={{ color: "#fff", marginTop: 5 }}>
+          Não tem conta? Registre-se!
+        </Text>
         <TouchableOpacity
-          style={[styles.buttons, styles.buttonOutline]}
-          onPress={() => handleReg(email, senha) }
+          // style={[styles.buttons, styles.buttonOutline]}
+          style={{ marginTop: 15 }}
+          // onPress={() => handleReg(email, senha) }
+          //@ts-ignore
+          onPress={() => navigation.navigate("Register")}
         >
-          <Text style={[styles.buttonText, styles.buttonOutlineText]}>
+          <Text
+            // style={[styles.buttonText, styles.buttonOutlineText]}
+            style={{ color: "#B859C0", fontSize: 20, fontWeight: "700" }}
+          >
             Registrar-se
           </Text>
         </TouchableOpacity>
