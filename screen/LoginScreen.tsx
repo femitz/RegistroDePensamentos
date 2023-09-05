@@ -5,7 +5,7 @@ import {
   View,
   TouchableOpacity,
   Alert,
-} from "react-native";
+} from "react-native"
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -122,6 +122,7 @@ const LoginScreen = () => {
     <View style={styles.container}>
       <StatusBar style="dark" />
       <Text style={{ color: "#fff", fontSize: 26 }}>Bem-vindo!</Text>
+
       <View style={styles.containerInputs}>
         <Text style={{ color: "#fff" }}>Email:</Text>
         {emailError.length > 0 && (
@@ -197,6 +198,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
+    height: 50,
   },
 
   buttons: {
@@ -227,13 +229,13 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontWeight: "700",
-    fontSize: 16,
+    fontSize: 19,
   },
 
   buttonOutlineText: {
     color: "#B859C0",
     fontWeight: "700",
-    fontSize: 16,
+    fontSize: 19,
   },
   textError: {
     color: "#db0f46",
