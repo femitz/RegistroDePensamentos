@@ -22,6 +22,8 @@ const LoginScreen = () => {
   const navigation = useNavigation();
   const auth = getAuth();
 
+  const sobreNos = "Para saber mais como seus dados são guardados visite a nossa pagina: \n\ngithub.com/devmitz/RegistroDePensamentos\n\n Caso queira solicitar a exclusão de sua conta envie uma email para: \n\ncontato.felipeschmitz@gmail.com"
+
   useEffect(() => {
     checkPreviousLogin();
   }, []);
@@ -164,6 +166,11 @@ const LoginScreen = () => {
           <Text style={{ color: "#B859C0", fontSize: 20, fontWeight: "700" }}>
             Registrar-se
           </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={{position:'relative', bottom: -140,}}
+        onPress={() => Alert.alert("Sobre nós", sobreNos)}>
+          <Text style={{color: '#fff'}}>Sobre nós</Text>
         </TouchableOpacity>
       </View>
     </View>
