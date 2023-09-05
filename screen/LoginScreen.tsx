@@ -5,78 +5,100 @@ import {
   View,
   TouchableOpacity,
   Alert,
-} from "react-native";
+} from "react-native"
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { getDoc, doc, collection, setDoc } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getDoc, doc } from "firebase/firestore";
 import { FIRESTORE_DB } from "../firebase/Firebase";
 import { StatusBar } from "expo-status-bar";
 
-
 const LoginScreen = () => {
-  const [email, setEmail] = useState("")
-  const [senha, setSenha] = useState("")
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [senhaError, setSenhaError] = useState("");
   const navigation = useNavigation();
   const auth = getAuth();
+
+  const sobreNos = "Para saber mais como seus dados são guardados visite a nossa pagina: \n\ngithub.com/devmitz/RegistroDePensamentos\n\n Caso queira solicitar a exclusão de sua conta envie uma email para: \n\ncontato.felipeschmitz@gmail.com"
 
   useEffect(() => {
     checkPreviousLogin();
   }, []);
 
+  const getErrors = (email, senha) => {
+    const errors = [];
+
+    //reset erros
+    setEmailError("");
+    setSenhaError("");
+
+    //verifica se o camp do email já possui algum erro
+    if (!email) {
+      setEmailError("Digite um email.");
+      errors.push("email: digite um email.");
+    } else if (!email.includes("@") || !email.includes(".com")) {
+      setEmailError("Digite um email valido");
+      errors.push("email: digite um email valido");
+    }
+
+    //verifica se o campo da senha tem algum erro
+    if (!senha) {
+      setSenhaError("Digite uma senha.");
+      errors.push("senha: digite uma senha.");
+    }
+    return errors;
+  };
+
   async function handleLogin(email: string, senha: string) {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, senha);
-      const user = userCredential.user;
+    const errors = getErrors(email, senha);
 
-      const userDoc = await getDoc(doc(FIRESTORE_DB, "users", user.uid));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        await AsyncStorage.setItem("dataUser", JSON.stringify(userData));
-        await AsyncStorage.setItem("userLoggedIn", "true"); // Armazenar status de login 
-        await AsyncStorage.setItem("userUID", user.uid); // Armazenar o user UID
-        
-        //@ts-ignore
-        navigation.navigate('PensamentosAnteriores', { userId: user.uid });
-      } else {
-        console.log("Usuário não encontrado no banco de dados");
-      }
-    } catch (e) {
-        if(e.code){
-          switch(e.code){
-            case 'auth/weak-password':
-              Alert.alert("Senha muito fraca")
-            case 'auth/email-already-in-use':
-              Alert.alert("O email já está em uso.")
-            case 'auth/wrong-password':
-              Alert.alert("Senha incorreta.")
-            default:
-              console.log(e)
-          }
+    if (Object.keys(errors).length > 0) {
+      console.log("tem erros no form");
+    } else {
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          senha
+        );
+        const user = userCredential.user;
+
+        const userDoc = await getDoc(doc(FIRESTORE_DB, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          await AsyncStorage.setItem("dataUser", JSON.stringify(userData));
+          await AsyncStorage.setItem("userLoggedIn", "true"); // Armazenar status de login
+          await AsyncStorage.setItem("userUID", user.uid); // Armazenar o user UID
+
+          //@ts-ignore
+          navigation.navigate("PensamentosAnteriores", { userId: user.uid });
+        } else {
+          console.log("Usuário não encontrado no banco de dados");
         }
-      console.log("Erro handleLogin:", e);
+      } catch (error) {
+        const errorCode = error.code;
+        if (errorCode === "auth/user-not-found") {
+          console.log("Usuario não encontrado");
+        } else if (errorCode === "auth/wrong-password") {
+          Alert.alert(
+            "Senha incorreta",
+            "A senha está incorreta, verifique a senha e tente novamente."
+          );
+        } else if (errorCode === "auth/invalid-email") {
+          Alert.alert(
+            "Email invalido",
+            "O email digitado é invalido, verifique novamente"
+          );
+        } else {
+          console.log("Erro desconhecido.", errorCode);
+        }
+      }
     }
   }
 
-  async function handleReg(email: string, senha: string) {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-      const user = userCredential.user;
-      
-      console.log("Usuário logado");
-      const userRef = doc(collection(FIRESTORE_DB, "users"), user.uid);
-      await setDoc(userRef, {
-        id: user.uid,
-        email: email,
-      });
-      
-      await handleLogin(email, senha);
-    } catch (e) {
-      console.log("Erro handleReg:", e);
-    }
-  }
-  
   async function checkPreviousLogin() {
     try {
       const userLoggedIn = await AsyncStorage.getItem("userLoggedIn");
@@ -98,8 +120,14 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="dark"/>
+      <StatusBar style="dark" />
+      <Text style={{ color: "#fff", fontSize: 26 }}>Bem-vindo!</Text>
+
       <View style={styles.containerInputs}>
+        <Text style={{ color: "#fff" }}>Email:</Text>
+        {emailError.length > 0 && (
+          <Text style={styles.textError}>{emailError}</Text>
+        )}
         <TextInput
           style={styles.input}
           placeholder="JoseSilva@gmail.com"
@@ -107,6 +135,10 @@ const LoginScreen = () => {
           value={email}
           onChangeText={(text) => setEmail(text)}
         />
+        <Text style={{ color: "#fff", marginTop: 5 }}>Senha</Text>
+        {senhaError.length > 0 && (
+          <Text style={styles.textError}>{senhaError}</Text>
+        )}
         <TextInput
           style={styles.input}
           placeholder="Senha"
@@ -123,13 +155,23 @@ const LoginScreen = () => {
         >
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
+
+        <Text style={{ color: "#fff", marginTop: 5 }}>
+          Não tem conta? Registre-se!
+        </Text>
         <TouchableOpacity
-          style={[styles.buttons, styles.buttonOutline]}
-          onPress={() => handleReg(email, senha) }
+          style={{ marginTop: 10 }}
+          //@ts-ignore
+          onPress={() => navigation.navigate("Register")}
         >
-          <Text style={[styles.buttonText, styles.buttonOutlineText]}>
+          <Text style={{ color: "#B859C0", fontSize: 20, fontWeight: "700" }}>
             Registrar-se
           </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={{position:'relative', bottom: -140,}}
+        onPress={() => Alert.alert("Sobre nós", sobreNos)}>
+          <Text style={{color: '#fff'}}>Sobre nós</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -165,14 +207,16 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    elevation: 3,
+    justifyContent: 'center',
+    elevation: 2,
+    height: 55,
   },
 
   buttonContainer: {
-    width: "60%",
+    width: "70%",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40,
+    marginTop: 30,
   },
 
   buttonOutline: {
@@ -192,5 +236,9 @@ const styles = StyleSheet.create({
     color: "#B859C0",
     fontWeight: "700",
     fontSize: 19,
+  },
+  textError: {
+    color: "#db0f46",
+    fontWeight: "600",
   },
 });
