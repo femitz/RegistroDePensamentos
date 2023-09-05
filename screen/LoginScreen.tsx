@@ -159,7 +159,7 @@ const LoginScreen = () => {
           Não tem conta? Registre-se!
         </Text>
         <TouchableOpacity
-          style={{ marginTop: 15 }}
+          style={{ marginTop: 10 }}
           //@ts-ignore
           onPress={() => navigation.navigate("Register")}
         >
@@ -205,14 +205,16 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    elevation: 3,
+    justifyContent: 'center',
+    elevation: 2,
+    height: 55,
   },
 
   buttonContainer: {
-    width: "60%",
+    width: "70%",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40,
+    marginTop: 30,
   },
 
   buttonOutline: {
