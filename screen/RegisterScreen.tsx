@@ -160,7 +160,7 @@ const RegisterScreen = () => {
       >
         <Text style={styles.textsInputs}>Nome</Text>
         {nomeError.length > 0 && (
-          <Text style={{ color: "red", fontWeight: "700" }}>{nomeError}</Text>
+          <Text style={styles.textErrors}>{nomeError}</Text>
         )}
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <TextInput
@@ -173,7 +173,7 @@ const RegisterScreen = () => {
 
         <Text style={styles.textsInputs}>Sobrenome:</Text>
         {sobrenomeError.length > 0 && (
-          <Text style={{ color: "red", fontWeight: "700" }}>
+          <Text style={styles.textErrors}>
             {sobrenomeError}
           </Text>
         )}
@@ -186,7 +186,7 @@ const RegisterScreen = () => {
 
         <Text style={styles.textsInputs}>Email:</Text>
         {emailError.length > 0 && (
-          <Text style={{ color: "red", fontWeight: "700" }}>{emailError}</Text>
+          <Text style={styles.textErrors}>{emailError}</Text>
         )}
         <TextInput
           style={styles.input}
@@ -199,7 +199,7 @@ const RegisterScreen = () => {
 
         <Text style={styles.textsInputs}>Email novamente:</Text>
         {emailError.length > 0 && (
-          <Text style={{ color: "red", fontWeight: "700" }}>{emailError}</Text>
+          <Text style={styles.textErrors}>{emailError}</Text>
         )}
         <TextInput
           style={styles.input}
@@ -212,7 +212,7 @@ const RegisterScreen = () => {
 
         <Text style={styles.textsInputs}>Senha:</Text>
         {senhaError.length > 0 && (
-          <Text style={{ color: "red", fontWeight: "700" }}>{senhaError}</Text>
+          <Text style={styles.textErrors}>{senhaError}</Text>
         )}
         <TextInput
           style={styles.input}
@@ -224,7 +224,7 @@ const RegisterScreen = () => {
 
         <Text style={styles.textsInputs}>Senha novamente:</Text>
         {senhaError.length > 0 && (
-          <Text style={{ color: "red", fontWeight: "700" }}>{senhaError}</Text>
+          <Text style={styles.textErrors}>{senhaError}</Text>
         )}
         <TextInput
           style={styles.input}
@@ -287,4 +287,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
+  textErrors: {
+    color: '#db0f46',
+    fontWeight: '700',
+  }
 });
