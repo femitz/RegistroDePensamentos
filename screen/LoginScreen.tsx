@@ -4,6 +4,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -47,8 +48,18 @@ const LoginScreen = () => {
       } else {
         console.log("Usuário não encontrado no banco de dados");
       }
-    } catch (e) {
-      console.log("Erro handleLogin:", e);
+    } catch (error) {
+      const errorCode = error.code
+      if(errorCode === 'auth/user-not-found'){
+        console.log("Usuario não encontrado")
+      } else if(errorCode === 'auth/wrong-password'){
+        Alert.alert("Senha incorreta", "A senha está incorreta, verifique a senha e tente novamente.")
+      } else if(errorCode === 'auth/invalid-email'){
+        Alert.alert("Email invalido", "O email digitado é invalido, verifique novamente")
+      }
+      else{
+        console.log("Erro desconhecido.", errorCode)
+      }
     }
   }
 

@@ -141,8 +141,8 @@ const RegisterScreen = () => {
           height: 24,
           position: "relative",
           marginTop: 30,
-          left: -120,
-          marginBottom: 20,
+          left: -130,
+          marginBottom: 10,
         }}
       >
         <AntDesign
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    elevation: 3,
+    elevation: 1,
     marginTop: 10,
     marginBottom: 10,
   },
