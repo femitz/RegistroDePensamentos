@@ -142,6 +142,8 @@ export default function RegistrarScreen() {
             <TextInput
               style={styles.inputs}
               placeholder="Com quem você estava? O que estava fazendo? Quando foi? Onde foi?"
+              multiline
+              numberOfLines={4}
               onChangeText={(text) => setSituacaoHumor(text)}
               value={situacaoHumor}
             />
@@ -160,7 +162,6 @@ export default function RegistrarScreen() {
               placeholder="O que estava passando pela minha cabeça antes de começar a me sentir desse modo?"
               editable
               multiline
-              numberOfLines={4}
               onChangeText={(text) => setPensamentoAutomatico(text)}
               value={pensamentoAutomatico}
             />
@@ -171,7 +172,6 @@ export default function RegistrarScreen() {
               placeholder="Escreva evidências factuais para apoiar seu pensamento (Evite leitura de pensamentos ou interpretações de fatos)"
               editable
               multiline
-              numberOfLines={4}
               onChangeText={(text) => setEvidenciasApoiam(text)}
               value={evidenciasApoiam}
             />
@@ -182,7 +182,6 @@ export default function RegistrarScreen() {
               placeholder="Escreva evidências factuais que não apoiam seu pensamento (Evite leitura de pensamentos ou interpretações de fatos)"
               editable
               multiline
-              numberOfLines={4}
               onChangeText={(text) => setEvidenciasNaoApoiam(text)}
               value={evidenciasNaoApoiam}
             />
@@ -193,7 +192,6 @@ export default function RegistrarScreen() {
               placeholder="Escreva um pensamento alternativo a partir da conclusão das evidências"
               editable
               multiline
-              numberOfLines={4}
               onChangeText={(text) => setPensamentoAlternativo(text)}
               value={pensamentoAlternativo}
             />
@@ -202,6 +200,7 @@ export default function RegistrarScreen() {
             <TextInput
               style={styles.inputs}
               placeholder="Quanto você acredita no pensamento alternativo? 0-100%"
+              multiline
               onChangeText={(text) => setAvaliacaoPensamentoAlternativo(text)}
               value={avaliacaoPensamentoAlternativo}
             />
@@ -264,8 +263,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     height: 100,
-    textAlign: "center",
-    elevation: 5,
+    textAlign:'center',
+    elevation: 3,
+    padding: 10,
   },
 
   texts: {
