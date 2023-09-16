@@ -32,7 +32,7 @@ export interface Pensamentos {
 
 export default function RegistrarScreen() {
   const [situacaoHumor, setSituacaoHumor] = useState("")
-  const [estadoHumor, setEstadoHumor] = useState("")
+  const [estadoHumor, setEstadoHumor] = useState<number>(0)
   const [pensamentoAutomatico, setPensamentoAutomatico] = useState("")
   const [evidenciasApoiam, setEvidenciasApoiam] = useState("")
   const [evidenciasNaoApoiam, setEvidenciasNaoApoiam] = useState("")
@@ -71,7 +71,7 @@ export default function RegistrarScreen() {
       const doc = await addDoc(collection(FIRESTORE_DB,  `/users/${userId}/pensamentos/`), { 
         date: date, 
         situacaoHumor: situacaoHumor,
-        estadoHumor: estadoHumor,
+        estadoHumor: estadoHumor.toString(),
         pensamentoAutomatico: pensamentoAutomatico,
         evidenciasApoiam: evidenciasApoiam,
         evidenciasNaoApoiam: evidenciasNaoApoiam,
@@ -80,7 +80,7 @@ export default function RegistrarScreen() {
         avaliacaoEstadoHumor: avaliacaoEstadoHumor,
       })
       setSituacaoHumor('')
-      setEstadoHumor('')
+      setEstadoHumor(0)
       setPensamentoAutomatico('')
       setEvidenciasApoiam('')
       setEvidenciasNaoApoiam('')
@@ -96,30 +96,32 @@ export default function RegistrarScreen() {
 
   return (
     <SafeAreaView
-    style={{ backgroundColor: "#C197D4", flex: 1, paddingHorizontal: 12 }}
+    style={{ backgroundColor: "#C197D4", flex: 1, paddingHorizontal: 20 }}
     >
       <StatusBar style="dark" />
       <TouchableOpacity
         //botão de voltar...
         onPress={() => navigation.goBack()}
         style={{
-          width: 24,
-          height: 24,
           marginTop: 50,
-          marginLeft: 15,
           borderRadius: 30,
           marginBottom: 10,
+          backgroundColor:"#fff",
+          padding:10,
+          width:45,
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
         <AntDesign
           name="left"
           size={24}
-          color={"black"}
+          color={"#B859C0"}
           style={{ marginRight: 5 }}
         />
       </TouchableOpacity>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} >
         <View style={styles.container}>
           <View
             style={{
@@ -152,8 +154,10 @@ export default function RegistrarScreen() {
             <TextInput
               style={styles.inputs}
               placeholder="Ex: 0-100%"
-              onChangeText={(text) => setEstadoHumor(text)}
-              value={estadoHumor}
+              onChangeText={(text) => {setEstadoHumor(parseInt(text))}}
+              keyboardType="numeric"
+              maxLength={3}
+              value={estadoHumor==0?"": estadoHumor.toString()}
             />
 
             <Text style={styles.texts}>Pensamento Automatico (P.A)</Text>
@@ -215,13 +219,13 @@ export default function RegistrarScreen() {
 
           </View>
 
-          <TouchableOpacity style={{flexDirection: 'row', marginTop: 15}}
+          <TouchableOpacity style={{flexDirection: 'row', marginTop: 15*2}}
           onPress={() => setChecked(true)}>
             <Checkbox
             style={{marginRight: 5}}
             value={isChecked}
             onValueChange={setChecked}
-            color={isChecked ? '#4630EB' : undefined}
+            color={isChecked ? '#913BAF' : undefined}
             />
             <Text>Você deseja realmente salvar?</Text>
           </TouchableOpacity>
@@ -242,12 +246,10 @@ export default function RegistrarScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#C197D4",
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
     height: "100%",
-    padding: 5,
   },
 
   containerInputs: {
@@ -258,14 +260,14 @@ const styles = StyleSheet.create({
   },
 
   inputs: {
-    width: "90%",
+    width: "100%",
     backgroundColor: "#fff",
     borderRadius: 10,
     fontSize: 16,
     height: 100,
     textAlign:'center',
     elevation: 3,
-    padding: 10,
+    padding: 12,
   },
 
   texts: {
@@ -275,7 +277,7 @@ const styles = StyleSheet.create({
   },
   buttonEnviar:{
     borderRadius: 30,
-    width: "90%",
+    width: "100%",
     height: 50,
     alignItems: "center",
     justifyContent: "center",

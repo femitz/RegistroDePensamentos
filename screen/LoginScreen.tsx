@@ -6,122 +6,29 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native"
-import React, { useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { getDoc, doc } from "firebase/firestore";
-import { FIRESTORE_DB } from "../firebase/Firebase";
 import { StatusBar } from "expo-status-bar";
+import { useNavigation } from "@react-navigation/native";
+import { useLogin } from "../hook/useLogin";
+import { Ionicons } from '@expo/vector-icons';
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [senhaError, setSenhaError] = useState("");
+  // custon hook, serve para separar a parte logica do conteudo em si, bem simples
+  const {
+    email, setEmail,
+    senha, setSenha,
+    secureText, setSecureText,
+    emailError,
+    senhaError,
+    sobreNos,
+    handleLogin
+  } = useLogin()
+
   const navigation = useNavigation();
-  const auth = getAuth();
-
-  const sobreNos = "Para saber mais como seus dados são guardados visite a nossa pagina: \n\ngithub.com/devmitz/RegistroDePensamentos\n\n Caso queira solicitar a exclusão de sua conta envie uma email para: \n\ncontato.felipeschmitz@gmail.com"
-
-  useEffect(() => {
-    checkPreviousLogin();
-  }, []);
-
-  const getErrors = (email, senha) => {
-    const errors = [];
-
-    //reset erros
-    setEmailError("");
-    setSenhaError("");
-
-    //verifica se o camp do email já possui algum erro
-    if (!email) {
-      setEmailError("Digite um email.");
-      errors.push("email: digite um email.");
-    } else if (!email.includes("@") || !email.includes(".com")) {
-      setEmailError("Digite um email valido");
-      errors.push("email: digite um email valido");
-    }
-
-    //verifica se o campo da senha tem algum erro
-    if (!senha) {
-      setSenhaError("Digite uma senha.");
-      errors.push("senha: digite uma senha.");
-    }
-    return errors;
-  };
-
-  async function handleLogin(email: string, senha: string) {
-    const errors = getErrors(email, senha);
-
-    if (Object.keys(errors).length > 0) {
-      console.log("tem erros no form");
-    } else {
-      try {
-        const userCredential = await signInWithEmailAndPassword(
-          auth,
-          email,
-          senha
-        );
-        const user = userCredential.user;
-
-        const userDoc = await getDoc(doc(FIRESTORE_DB, "users", user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          await AsyncStorage.setItem("dataUser", JSON.stringify(userData));
-          await AsyncStorage.setItem("userLoggedIn", "true"); // Armazenar status de login
-          await AsyncStorage.setItem("userUID", user.uid); // Armazenar o user UID
-
-          //@ts-ignore
-          navigation.navigate("PensamentosAnteriores", { userId: user.uid });
-        } else {
-          console.log("Usuário não encontrado no banco de dados");
-        }
-      } catch (error) {
-        const errorCode = error.code;
-        if (errorCode === "auth/user-not-found") {
-          console.log("Usuario não encontrado");
-        } else if (errorCode === "auth/wrong-password") {
-          Alert.alert(
-            "Senha incorreta",
-            "A senha está incorreta, verifique a senha e tente novamente."
-          );
-        } else if (errorCode === "auth/invalid-email") {
-          Alert.alert(
-            "Email invalido",
-            "O email digitado é invalido, verifique novamente"
-          );
-        } else {
-          console.log("Erro desconhecido.", errorCode);
-        }
-      }
-    }
-  }
-
-  async function checkPreviousLogin() {
-    try {
-      const userLoggedIn = await AsyncStorage.getItem("userLoggedIn");
-      if (userLoggedIn === "true") {
-        const dataUser = await AsyncStorage.getItem("dataUser");
-        if (dataUser) {
-          const userData = JSON.parse(dataUser);
-          console.log("Usuário já logado:", userData);
-          //@ts-ignore
-          navigation.navigate("PensamentosAnteriores", { userId: userData.id });
-        }
-      } else {
-        console.log("Nenhum usuário logado anteriormente.");
-      }
-    } catch (e) {
-      console.log("Erro ao verificar login anterior:", e);
-    }
-  }
 
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
-      <Text style={{ color: "#fff", fontSize: 26 }}>Bem-vindo!</Text>
+      <Text style={{ color: "#fff", fontSize: 26, marginBottom:16 }}>Bem-vindo!</Text>
 
       <View style={styles.containerInputs}>
         <Text style={{ color: "#fff" }}>Email:</Text>
@@ -139,13 +46,21 @@ const LoginScreen = () => {
         {senhaError.length > 0 && (
           <Text style={styles.textError}>{senhaError}</Text>
         )}
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          value={senha}
-          onChangeText={(text) => setSenha(text)}
-          secureTextEntry
-        />
+        <View style={{flexDirection:"row"}}>
+          <TextInput
+            style={[styles.input,{flex:1}]}
+            placeholder="Senha"
+            value={senha}
+            onChangeText={(text) => setSenha(text)}
+            secureTextEntry={secureText}
+          />
+          <TouchableOpacity
+            style={styles.eye}
+            onPress={()=>setSecureText(!secureText)}
+          >
+            <Ionicons name={secureText? "eye" : "eye-off"} size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.buttonContainer}>
@@ -153,10 +68,10 @@ const LoginScreen = () => {
           onPress={() => handleLogin(email, senha)}
           style={styles.buttons}
         >
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={{ color: "#fff", fontSize: 20, fontWeight: "700" }}>Login</Text>
         </TouchableOpacity>
 
-        <Text style={{ color: "#fff", marginTop: 5 }}>
+        <Text style={{ color: "#fff", marginTop: 50 }}>
           Não tem conta? Registre-se!
         </Text>
         <TouchableOpacity
@@ -171,7 +86,7 @@ const LoginScreen = () => {
 
         <TouchableOpacity style={{position:'relative', bottom: -140,}}
         onPress={() => Alert.alert("Sobre nós", sobreNos)}>
-          <Text style={{color: '#fff'}}>Sobre nós</Text>
+          <Text style={{color: '#fff',textDecorationLine:"underline"}}>Sobre nós</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -204,7 +119,6 @@ const styles = StyleSheet.create({
   buttons: {
     backgroundColor: "#B859C0",
     width: "100%",
-    padding: 15,
     borderRadius: 10,
     alignItems: "center",
     justifyContent: 'center',
@@ -213,7 +127,7 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    width: "70%",
+    width: "80%",
     justifyContent: "center",
     alignItems: "center",
     marginTop: 30,
@@ -226,12 +140,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
 
-  buttonText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 19,
-  },
-
   buttonOutlineText: {
     color: "#B859C0",
     fontWeight: "700",
@@ -241,4 +149,15 @@ const styles = StyleSheet.create({
     color: "#db0f46",
     fontWeight: "600",
   },
+  eye:{
+    backgroundColor:"#B859C0",
+    marginTop:5,
+    marginLeft:-10,
+    zIndex:-1,
+    justifyContent: "center",
+    alignContent: "center",
+    paddingLeft:20, // mais 10 para compensar a margem negativa
+    paddingRight:10,
+    borderRadius:10,
+  }
 });

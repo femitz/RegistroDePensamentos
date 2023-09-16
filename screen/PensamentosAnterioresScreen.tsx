@@ -9,13 +9,13 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { FIRESTORE_DB } from "../firebase/Firebase";
 import { Pensamentos } from "./RegistrarScreen";
-import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
-import { EvilIcons } from "@expo/vector-icons";
+import { collection, onSnapshot } from "firebase/firestore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from '@expo/vector-icons'; 
 import { getAuth, signOut } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Cards } from "../components/Cards";
 
 const PensamentosAnterioresScreen = () => {
   const navigation = useNavigation();
@@ -60,73 +60,33 @@ const PensamentosAnterioresScreen = () => {
 
   const [pensamentos, setPensamentos] = useState<Pensamentos[]>([]);
 
-  const renderPensamentos = ({ item }: any) => {
-    const ref = doc(FIRESTORE_DB, `/users/${userId}/pensamentos/${item.id}`);
-
-    const deleteItem = async () => {
-      deleteDoc(ref);
-    };
-
-    return (
-      <View style={styles.pensamentosContainer}>
-        <Text style={styles.pensamentosTitle}>Data:</Text>
-        <Text style={styles.pensamentosText}>{item.date}</Text>
-
-        <Text style={styles.pensamentosTitle}>Situação do humor:</Text>
-        <Text style={styles.pensamentosText}>{item.situacaoHumor}</Text>
-
-        <Text style={styles.pensamentosTitle}>Estado do humor:</Text>
-        <Text style={styles.pensamentosText}>{item.estadoHumor}</Text>
-
-        <Text style={styles.pensamentosTitle}>Pensamento automatico:</Text>
-        <Text style={styles.pensamentosText}>{item.pensamentoAutomatico}</Text>
-
-        <Text style={styles.pensamentosTitle}>Evidencias que apoiam: </Text>
-        <Text style={styles.pensamentosText}>{item.evidenciasApoiam}</Text>
-
-        <Text style={styles.pensamentosTitle}>Evidencias que não apoiam: </Text>
-        <Text style={styles.pensamentosText}>{item.evidenciasNaoApoiam}</Text>
-
-        <Text style={styles.pensamentosTitle}>Pensamento alternativo: </Text>
-        <Text style={styles.pensamentosText}>{item.pensamentoAlternativo}</Text>
-
-        <Text style={styles.pensamentosTitle}>
-          Avaliação pensamento alternativo:{" "}
-        </Text>
-        <Text style={styles.pensamentosText}>
-          {item.avaliacaoPensamentoAlternativo}
-        </Text>
-
-        <Text style={styles.pensamentosTitle}>Avaliação estado de humor: </Text>
-        <Text style={styles.pensamentosText}>{item.avaliacaoEstadoHumor}</Text>
-
-        <TouchableOpacity
-          style={{
-            width: "100%",
-            flexDirection: "row",
-            justifyContent: "flex-end",
-          }}
-          onPress={() => deleteItem()}
-        >
-          <EvilIcons name="trash" size={36} color="red" />
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
 
       {/* Botão sair. */}
       <TouchableOpacity
-      style={{
-        marginTop:20,
-      }}
+      style={styles.exit}
       onPress={() => loggout()}>
-        <Ionicons name="exit-outline" size={24} color="red" />
+        <Ionicons name="exit-outline" size={24} color="#B859C0"  />
       </TouchableOpacity>
        {/*Botão Adicionar novos pensamentos  */}
+      
+
+      {pensamentos.length > 0 ? (
+          <FlatList
+            data={pensamentos}
+            renderItem={(item)=><Cards item={item.item} userId={userId}/>}
+            keyExtractor={(pensamentos: Pensamentos) => pensamentos.id}
+            showsVerticalScrollIndicator={false}
+            // contentContainerStyle={{ paddingBottom: 120 }}
+            inverted={pensamentos.length === 1 ? false : true}
+          />
+      ) : (
+        <View style={{flex:1,justifyContent:"center"}}>
+          <Text>Adicione novos pensamentos para aparecer por aqui...</Text>
+        </View>
+      )}
       <TouchableOpacity
         style={{
           width: "100%",
@@ -135,8 +95,7 @@ const PensamentosAnterioresScreen = () => {
           justifyContent: "center",
           alignItems: "center",
           height: 50,
-          marginTop: 10,
-          marginBottom: 10,
+          marginVertical: 10,
           elevation: 1,
         }}
         //@ts-ignore
@@ -146,20 +105,6 @@ const PensamentosAnterioresScreen = () => {
           Adicionar novos pensamentos
         </Text>
       </TouchableOpacity>
-
-      {pensamentos.length > 0 ? (
-        <View>
-          <FlatList
-            data={pensamentos}
-            renderItem={renderPensamentos}
-            keyExtractor={(pensamentos: Pensamentos) => pensamentos.id}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 120 }}
-          />
-        </View>
-      ) : (
-        <Text>Adicione novos pensamentos para aparecer por aqui...</Text>
-      )}
     </SafeAreaView>
   );
 };
@@ -192,4 +137,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontStyle: "italic",
   },
+  exit:{
+    marginTop:20,
+    marginBottom:10,
+    borderRadius:50,
+    backgroundColor:"#fff",
+    padding:10,
+    width:45,
+    justifyContent: "center",
+    alignItems: "center",
+  }
 });
