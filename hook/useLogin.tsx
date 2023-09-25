@@ -15,7 +15,7 @@ export function useLogin(){
   const navigation = useNavigation();
   const auth = getAuth();
 
-  const sobreNos = "Para saber mais como seus dados são guardados visite a nossa pagina: \n\ngithub.com/devmitz/RegistroDePensamentos\n\n Caso queira solicitar a exclusão de sua conta envie uma email para: \n\ncontato.felipeschmitz@gmail.com"
+  const sobreNos = "Para saber mais como seus dados são guardados visite a nossa pagina: \n\ngithub.com/devmitz/RegistroDePensamentos\n\n"
 
   useEffect(() => {
     checkPreviousLogin();

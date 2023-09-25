@@ -13,27 +13,15 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from '@expo/vector-icons'; 
-import { getAuth, signOut } from "firebase/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { Cards } from "../components/Cards";
 
 const PensamentosAnterioresScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const auth = getAuth();
 
   //@ts-ignore
   const { userId } = route.params;
-
-  function loggout(){
-    signOut(auth).then(() => {
-      AsyncStorage.clear()
-      //@ts-ignore
-      navigation.navigate('Login')
-    }).catch((error) => {
-      console.log('Erro ao deslogar: ', error)
-    });
-  }
 
   useEffect(() => {
     const pensamentosRef = collection(
@@ -67,8 +55,10 @@ const PensamentosAnterioresScreen = () => {
       {/* Botão sair. */}
       <TouchableOpacity
       style={styles.exit}
-      onPress={() => loggout()}>
-        <Ionicons name="exit-outline" size={24} color="#B859C0"  />
+      //@ts-ignore
+      onPress={() => navigation.navigate("Settings")}>
+        <Ionicons name="settings-outline" size={24} color="#B859C0" />
+        {/* <Ionicons name="exit-outline" size={24} color="#B859C0"  /> */}
       </TouchableOpacity>
        {/*Botão Adicionar novos pensamentos  */}
       
