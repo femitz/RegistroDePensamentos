@@ -18,11 +18,8 @@ import Buttons from "../components/ScreenSettings/Buttons";
 const Settings = () => {
   const navigation = useNavigation();
   const auth = getAuth();
-
-  const sobre =
-    "Para saber mais como seus dados são guardados visite a nossa pagina: \n\ngithub.com/devmitz/RegistroDePensamentos\n\n";
-
-  const contato = "Entre em contato conosco com nosso email de suporte:\n\n contato.felipeschmitz@gmail.com";
+  const sobre = "Para saber mais o codigo fonte e outras informações acesse: \n\ngithub.com/devmitz/RegistroDePensamentos\n\n"
+  const contato = "Entre em contato conosco com nosso email de suporte:\n\n contato.felipeschmitz@gmail.com"
 
   function loggout() {
     signOut(auth)
@@ -64,12 +61,11 @@ const Settings = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           <Buttons text="Sobre" onPress={() => Alert.alert("Sobre", sobre)} />
-          <Buttons text="Help" onPress={() => null} />
-          <Buttons text="Contate-nos" onPress={() => Alert.alert("Contate-nos", contato)} />
+          <Buttons text="Contate-nos" onPress={() => Alert.alert("Contate-nos", contato)}/>
           {/* @ts-ignore */}
-          <Buttons text ="Termos e politica de privacidade" onPress={() => navigation.navigate('PrivacyPolicy')} />
+          <Buttons text="Termos e politica de privacidade" onPress={() => navigation.navigate("PrivacyPolicy")}/>
           {/* @ts-ignore */}
-          <Buttons text ="Deletar conta" onPress={() => navigation.navigate("DeleteAccount")} />
+          <Buttons text="Deletar conta" onPress={() => navigation.navigate("DeleteAccount")}/>
           <Buttons text="Sair" onPress={() => loggout()} />
         </View>
       </ScrollView>

@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { deleteUser, getAuth, signOut, reauthenticateWithCredential, signInWithEmailAndPassword } from "firebase/auth";
+import { deleteUser, getAuth, signOut, signInWithEmailAndPassword } from "firebase/auth";
 import {
   TouchableOpacity,
   View,
@@ -96,7 +96,7 @@ const DeleteAccount = () => {
       .then(async () => {
         await signOut(auth);
         await AsyncStorage.clear().then(() => {
-          console.log("then.");
+          console.log("Conta deletada.");
         });
         Alert.alert("Conta deletada.", "Sua conta foi deletada com sucesso.")
         // @ts-ignore
