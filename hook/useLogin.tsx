@@ -118,6 +118,7 @@ export function useLogin(){
     emailError,
     senhaError,
     sobreNos,
-    handleLogin
+    handleLogin,
+    getErrors,
   }
 }

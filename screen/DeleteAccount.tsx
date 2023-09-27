@@ -1,22 +1,110 @@
 import { useNavigation } from "@react-navigation/native";
-import { getAuth } from "firebase/auth";
+import { deleteUser, getAuth, signOut, reauthenticateWithCredential, signInWithEmailAndPassword } from "firebase/auth";
 import {
   TouchableOpacity,
   View,
   Text,
   StyleSheet,
   TextInput,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getDoc, doc } from "firebase/firestore";
+import { FIRESTORE_DB } from "../firebase/Firebase";
 
 const DeleteAccount = () => {
   const navigation = useNavigation();
   const auth = getAuth();
   const [senha, setSenha] = useState("");
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [senhaError, setSenhaError] = useState("");
 
-  const deleteAccount = () => {
-    console.log("delete account");
+  const getErrors = (email: string , senha: string) => {
+    const errors = [];
+
+    //reset erros
+    setEmailError("");
+    setSenhaError("");
+
+    //verifica se o camp do email já possui algum erro
+    if (!email) {
+      setEmailError("Digite um email.");
+      errors.push("email: digite um email.");
+    } else if (!email.includes("@") || !email.includes(".com")) {
+      setEmailError("Digite um email valido");
+      errors.push("email: digite um email valido");
+    }
+
+    //verifica se o campo da senha tem algum erro
+    if (!senha) {
+      setSenhaError("Digite uma senha.");
+      errors.push("senha: digite uma senha.");
+    }
+    return errors;
+  };
+
+  async function handleLogin(email: string, senha: string) {
+    const errors = getErrors(email, senha);
+
+    if (Object.keys(errors).length > 0) {
+      console.log("tem erros no form");
+    } else {
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          senha
+        );
+        const user = userCredential.user;
+
+        const userDoc = await getDoc(doc(FIRESTORE_DB, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          await AsyncStorage.setItem("dataUser", JSON.stringify(userData));
+          await AsyncStorage.setItem("userLoggedIn", "true"); // Armazenar status de login
+          await AsyncStorage.setItem("userUID", user.uid); // Armazenar o user UID
+        } else {
+          console.log("Usuário não encontrado no banco de dados");
+        }
+        return user
+      } catch (error) {
+        const errorCode = error.code;
+        if (errorCode === "auth/user-not-found") {
+          console.log("Usuario não encontrado");
+        } else if (errorCode === "auth/wrong-password") {
+          Alert.alert(
+            "Senha incorreta",
+            "A senha está incorreta, verifique a senha e tente novamente."
+          );
+        } else if (errorCode === "auth/invalid-email") {
+          Alert.alert(
+            "Email invalido",
+            "O email digitado é invalido, verifique novamente"
+          );
+        } else {
+          console.log("Erro desconhecido.", errorCode);
+        }
+      }
+    }
+  }
+
+  const deleteID = async (email: string, senha: string) => {
+    const user = handleLogin(email, senha)
+    deleteUser(await user)
+      .then(async () => {
+        await signOut(auth);
+        await AsyncStorage.clear().then(() => {
+          console.log("then.");
+        });
+        Alert.alert("Conta deletada.", "Sua conta foi deletada com sucesso.")
+        // @ts-ignore
+        navigation.navigate("Login")
+      })
+      .catch((error) => {
+        Alert.alert("Error", "Houve um erro: " + error);
+      });
   };
 
   return (
@@ -35,7 +123,7 @@ const DeleteAccount = () => {
       <View style={{ width: "95%", marginTop: 20 }}>
         <Text>Email:</Text>
         <TextInput
-          style={[styles.input, {marginBottom: 5,}]}
+          style={[styles.input, { marginBottom: 5 }]}
           placeholder="seuemail@email.com"
           inputMode="email"
           keyboardType="email-address"
@@ -62,7 +150,7 @@ const DeleteAccount = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.buttons, styles.buttonDelete]}
-          onPress={() => deleteAccount()}
+          onPress={() => deleteID(email, senha)}
         >
           <Text style={styles.textButtons}>Deletar</Text>
         </TouchableOpacity>
