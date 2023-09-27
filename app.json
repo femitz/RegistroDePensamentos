@@ -2,7 +2,7 @@
   "expo": {
     "name": "Registro De Pensamentos",
     "slug": "RegistroDePensamentos",
-    "version": "2",
+    "version": "3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -23,7 +23,7 @@
         "backgroundColor": "#B859C0"
       },
       "package": "com.mitzin.RegistroDePensamentos",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "favicon": "./assets/favicon.png"
