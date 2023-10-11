@@ -91,20 +91,30 @@ const DeleteAccount = () => {
   }
 
   const deleteID = async (email: string, senha: string) => {
-    const user = handleLogin(email, senha)
-    deleteUser(await user)
-      .then(async () => {
-        await signOut(auth);
-        await AsyncStorage.clear().then(() => {
-          console.log("Conta deletada.");
+    const errors = getErrors(email, senha);
+    if (Object.keys(errors).length > 0) {
+      console.log(errors);
+      Alert.alert(
+        "Campo Incorreto",
+        "Houve um erro no formulario, verifique o email e a senha."
+      );
+    } 
+    else{
+      const user = handleLogin(email, senha)
+      deleteUser(await user)
+        .then(async () => {
+          await signOut(auth);
+          await AsyncStorage.clear().then(() => {
+            console.log("Conta deletada.");
+          });
+          Alert.alert("Conta deletada.", "Sua conta foi deletada com sucesso.")
+          // @ts-ignore
+          navigation.replace("Login")
+        })
+        .catch((error) => {
+          Alert.alert("Error", "Houve um erro: " + error);
         });
-        Alert.alert("Conta deletada.", "Sua conta foi deletada com sucesso.")
-        // @ts-ignore
-        navigation.navigate("Login")
-      })
-      .catch((error) => {
-        Alert.alert("Error", "Houve um erro: " + error);
-      });
+    }
   };
 
   return (
