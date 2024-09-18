@@ -13,7 +13,7 @@ Em breve disponivel na AppleStore
 ## Baixando via GitHub
 Abra o terminal cole os seguintes comandos:
 ````
-git clone https://www.github.com/devmitz/RegistrodePensamentos
+git clone https://www.github.com/femitz/RegistrodePensamentos
 cd Registro de pensamentos
 ````
 
@@ -70,7 +70,7 @@ AppleStore - https://apps.apple.com/app/expo-go/id982107779
 Sinta-se à vontade para contribuir com este projeto que analisarei sua pull.
 ## Autores
 
-* **Felipe Schmitz** - *Trabalho inicial* - [FelipeSchmitz](https://github.com/devmitz)
+* **Felipe Schmitz** - *Trabalho inicial* - [FelipeSchmitz](https://github.com/femitz)
 
 ## Licença
 
